@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 400px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        h1 {
+            text-align: center;
+            background: #764ba2;
+            color: white;
+            padding: 15px;
+            margin: 0;
+        }
+        #chat-container {
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 10px;
+            line-height: 1.5;
+        }
+        .user-message {
+            background: #667eea;
+            color: white;
+            align-self: flex-end;
+        }
+        .chatbot-message {
+            background: #f1f1f1;
+            align-self: flex-start;
+        }
+        .box {
+            display: flex;
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #ddd;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .send-button {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 16px;
+        }
+        .send-button:hover {
+            background: #5a3c7e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>College Chatbot</h1>
+        <div id="chat-container">
+            <div class="message chatbot-message">Hi! I'm a chatbot. How can I assist you today?</div>
+        </div>
+        <form id="user-input-form" class="box">
+            <input type="text" id="user-input" placeholder="Type your message..." autofocus autocomplete="off">
+            <button type="submit" class="send-button"><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('form').on('submit', function(event) {
+                event.preventDefault();
+                var user_input = $('#user-input').val();
+                if (user_input.trim() !== '') {
+                    $('#user-input').val('');
+                    appendUserMessage(user_input);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/chat',
+                        data: { user_input: user_input },
+                        success: function(response) {
+                            appendChatbotMessage(response);
+                        }
+                    });
+                }
+            });
+
+            function appendUserMessage(message) {
+                var messageElement = $('<div class="message user-message"></div>').text(message);
+                $('#chat-container').append(messageElement);
+                scrollChatToBottom();
+            }
+
+            function appendChatbotMessage(message) {
+                var messageElement = $('<div class="message chatbot-message"></div>').text(message);
+                $('#chat-container').append(messageElement);
+                scrollChatToBottom();
+            }
+
+            function scrollChatToBottom() {
+                $('#chat-container').scrollTop($('#chat-container')[0].scrollHeight);
+            }
+        });
+    </script>
+</body>
+</html>
